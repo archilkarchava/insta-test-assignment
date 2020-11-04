@@ -29,9 +29,6 @@ const NumericInput: React.FC<NumericInputProps> = ({
   const [value, setValue] = useState(initialValue);
 
   function handleChange(val: string | number | undefined) {
-    if (!val) {
-      return;
-    }
     const roundedVal = digits ? round(Number(val), digits) : Number(val);
     const clampedVal = clamp(roundedVal, min, max);
     setValue(clampedVal);
