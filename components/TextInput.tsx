@@ -1,17 +1,29 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React, { ChangeEvent } from "react";
 
-type Props = Omit<JSX.IntrinsicElements["input"], "defaultValue"> & {
-  initialValue?: JSX.IntrinsicElements["input"]["defaultValue"];
-};
+type OmitAttrs = "defaultValue" | "onChange";
 
-const TextInput: React.FC<Props> = ({ initialValue, ...rest }) => {
-  const [value, setValue] = useState(initialValue);
+export interface TextInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, OmitAttrs> {
+  initialValue?: React.InputHTMLAttributes<HTMLInputElement>["defaultValue"];
+  onChange?: (value: number | string | undefined) => void;
+}
+
+const TextInput: React.FC<TextInputProps> = ({
+  initialValue,
+  onChange,
+  ...rest
+}) => {
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    if (onChange) {
+      onChange(e.target.value);
+    }
+  }
   return (
     <StyledInput
       type="text"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={handleChange}
+      defaultValue={initialValue}
       {...rest}
     />
   );

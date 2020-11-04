@@ -1,41 +1,50 @@
 import styled from "@emotion/styled";
-import TextInput from "components/TextInput";
+import TextInput, { TextInputProps } from "components/TextInput";
+import clamp from "lodash/clamp";
+import round from "lodash/round";
 import React, { useState } from "react";
-import { clamp } from "utils";
 
-type Props = Omit<
-  React.ComponentProps<typeof TextInput>,
-  "type" | "initialValue" | "ref"
-> & {
+interface NumericInputProps extends TextInputProps {
+  min?: number;
+  max?: number;
+  step?: number;
   initialValue?: number;
   digits?: number;
-};
+}
 
-const NumericInput: React.FC<Props> = ({
-  initialValue,
+const NumericInput: React.FC<NumericInputProps> = ({
+  initialValue = 0,
   digits,
   step = 1,
-  max,
-  min,
+  max = Number.MAX_SAFE_INTEGER,
+  min = Number.MIN_SAFE_INTEGER,
+  onChange,
   ...rest
 }) => {
-  if (step < 1)
+  if (step <= 0)
     throw new Error('"step" should be greater than or equal to one.');
   if (digits && digits < 0)
     throw new Error('"digits" should be greater than or equal to zero.');
 
-  const [value, setValue] = useState(initialValue || 0);
+  const [value, setValue] = useState(initialValue);
 
-  function handleChange(val: number) {
-    const roundedVal = digits ? Number(val.toFixed(digits)) : val;
-    setValue(clamp(roundedVal, Number(min), Number(max)));
+  function handleChange(val: string | number | undefined) {
+    if (!val) {
+      return;
+    }
+    const roundedVal = digits ? round(Number(val), digits) : Number(val);
+    const clampedVal = clamp(roundedVal, min, max);
+    setValue(clampedVal);
+    if (onChange) {
+      onChange(clampedVal);
+    }
   }
 
   return (
     <Container>
       <StyledTextInput
         value={value}
-        onChange={(e) => handleChange(Number(e.target.value))}
+        onChange={handleChange}
         type="number"
         step={step}
         max={max}
@@ -43,10 +52,10 @@ const NumericInput: React.FC<Props> = ({
         {...rest}
       />
       <ButtonContainer>
-        <StyledButton onClick={() => handleChange(value + Number(step))}>
+        <StyledButton onClick={() => handleChange(value + step)}>
           +
         </StyledButton>
-        <StyledButton onClick={() => handleChange(value - Number(step))}>
+        <StyledButton onClick={() => handleChange(value - step)}>
           -
         </StyledButton>
       </ButtonContainer>

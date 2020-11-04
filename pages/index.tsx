@@ -1,28 +1,39 @@
 import { css, Global } from "@emotion/core";
 import styled from "@emotion/styled";
-import NumericInput from "../components/NumericInput";
+import NumericInput from "components/NumericInput";
+import React, { useState } from "react";
 
-const IndexPage = () => (
-  <>
-    <Container>
-      <InnerContainer>
-        <NumericInput digits={3} min={-2} max={40} step={2} initialValue={4} />
-      </InnerContainer>
-    </Container>
-    <Global
-      styles={css`
-        html,
-        body,
-        #__next {
-          width: 100%;
-          height: 100%;
-          padding: 0;
-          margin: 0;
-        }
-      `}
-    />
-  </>
-);
+const IndexPage = () => {
+  const [value, setValue] = useState(0);
+  return (
+    <>
+      <Container>
+        <InnerContainer>
+          <NumericInput
+            initialValue={value}
+            onChange={(val) => setValue(Number(val))}
+            digits={1}
+            min={-10}
+            max={70}
+            step={0.5}
+          />
+        </InnerContainer>
+      </Container>
+      <Global
+        styles={css`
+          html,
+          body,
+          #__next {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+          }
+        `}
+      />
+    </>
+  );
+};
 
 const Container = styled.div`
   display: flex;
